@@ -5,6 +5,7 @@
     "scripts": {
         "start": "func start --javascript",
         "start:verbose": "func start --javascript --verbose",
+        "trigger:metrics": "curl --location --request POST 'http://localhost:7071/admin/functions/Scheduled-Run-Metrics' --header 'Content-Type: application/json' --data-raw '{ \"input\": \"test\" }'",
         "test": "newman run integration-tests/azure-function-node-microservice-template.postman_collection.json -e integration-tests/envs/local-function-7071.postman_environment.json",
         "prepare": "husky install"
     },

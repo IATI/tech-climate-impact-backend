@@ -8,11 +8,14 @@ const {
     getACU,
     getDbCompute,
     getTotalValue,
+    getAvgValue,
+    getCPU,
 } = require('../metrics/azure');
 const config = require('../config/config');
 const cost = require('../config/db/metrics/cost');
 const acu = require('../config/db/metrics/acu');
 const dbCompute = require('../config/db/metrics/dbCompute');
+const avgCPU = require('../config/db/metrics/avgCPU');
 
 module.exports = async (context, myTimer) => {
     // Prepare start and end dates
@@ -51,7 +54,7 @@ module.exports = async (context, myTimer) => {
     const allResources = await getAllResources();
 
     // ACU
-    const acuData = await getTotalValue(await getACU(allResources));
+    const acuData = getTotalValue(await getACU(allResources));
 
     acu.startDate = startDate;
     acu.endDate = endDate;
@@ -60,11 +63,22 @@ module.exports = async (context, myTimer) => {
     await acu.save();
 
     // Database Compute
-    const dbComputeData = await getTotalValue(await getDbCompute(allResources));
+    const dbComputeData = getTotalValue(await getDbCompute(allResources));
 
     dbCompute.startDate = startDate;
     dbCompute.endDate = endDate;
     dbCompute.value = dbComputeData / gibIATI;
 
     await dbCompute.save();
+
+    // CPU Utilization
+    const cpuData = getAvgValue(await getCPU(allResources, startDate, endDate));
+
+    context.log(cpuData);
+
+    avgCPU.startDate = startDate;
+    avgCPU.endDate = endDate;
+    avgCPU.value = cpuData / gibIATI;
+
+    await avgCPU.save();
 };
