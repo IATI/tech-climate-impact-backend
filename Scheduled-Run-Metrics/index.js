@@ -6,11 +6,13 @@ const {
     getRawCost,
     getAllResources,
     getACU,
-    getTotalACU,
+    getDbCompute,
+    getTotalValue,
 } = require('../metrics/azure');
 const config = require('../config/config');
 const cost = require('../config/db/metrics/cost');
 const acu = require('../config/db/metrics/acu');
+const dbCompute = require('../config/db/metrics/dbCompute');
 
 module.exports = async (context, myTimer) => {
     // Prepare start and end dates
@@ -49,12 +51,20 @@ module.exports = async (context, myTimer) => {
     const allResources = await getAllResources();
 
     // ACU
-
-    const acuData = await getTotalACU(await getACU(allResources));
+    const acuData = await getTotalValue(await getACU(allResources));
 
     acu.startDate = startDate;
     acu.endDate = endDate;
     acu.value = acuData / gibIATI;
 
     await acu.save();
+
+    // Database Compute
+    const dbComputeData = await getTotalValue(await getDbCompute(allResources));
+
+    dbCompute.startDate = startDate;
+    dbCompute.endDate = endDate;
+    dbCompute.value = dbComputeData / gibIATI;
+
+    await dbCompute.save();
 };

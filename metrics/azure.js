@@ -95,8 +95,8 @@ module.exports.getAllResources = async () => {
     return data.value;
 };
 
-module.exports.getTotalACU = async (allACU) =>
-    allACU.reduce((acc, val) => {
+module.exports.getTotalValue = async (array) =>
+    array.reduce((acc, val) => {
         const res = acc + Number(val.value);
         return res;
     }, 0);
@@ -112,6 +112,19 @@ module.exports.getACU = async (resources) =>
                 metric: 'ACU',
                 value: ACUvalue,
                 resourceId: resource.id,
+            });
+        }
+        return result;
+    }, []);
+
+module.exports.getDbCompute = (resources) =>
+    resources.reduce((result, resource) => {
+        if (resource.type === 'Microsoft.DBforPostgreSQL/servers') {
+            result.push({
+                metric: 'dbCompute',
+                value: resource.sku.capacity,
+                unit: 'vCores',
+                id: resource.id,
             });
         }
         return result;
