@@ -69,3 +69,50 @@ module.exports.getRawCost = async (fromDate, endDate) => {
         return error;
     }
 };
+
+module.exports.getAllResources = async () => {
+    const token = await getBearerToken();
+
+    const myHeaders = new Headers();
+    // auth
+    // const token = await getBearerToken();
+    myHeaders.append('Authorization', `Bearer ${token.access_token}`);
+    myHeaders.append('Content-Type', 'application/json');
+
+    const requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow',
+    };
+
+    const response = await fetch(
+        `https://management.azure.com/subscriptions/${config.AZURE_SUBSCRIPTION_ID}/resources?api-version=2021-04-01`,
+        requestOptions
+    );
+
+    const data = await response.json();
+
+    return data.value;
+};
+
+module.exports.getTotalACU = async (allACU) =>
+    allACU.reduce((acc, val) => {
+        const res = acc + Number(val.value);
+        return res;
+    }, 0);
+
+module.exports.getACU = async (resources) =>
+    resources.reduce((result, resource) => {
+        if ('tags' in resource && 'ACU' in resource.tags && resource.tags.ACU === 'true') {
+            let ACUvalue = null;
+            if ('ACUvalue' in resource.tags) {
+                ACUvalue = resource.tags.ACUvalue;
+            }
+            result.push({
+                metric: 'ACU',
+                value: ACUvalue,
+                resourceId: resource.id,
+            });
+        }
+        return result;
+    }, []);

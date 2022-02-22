@@ -2,7 +2,12 @@ const fetch = require('node-fetch');
 const { Headers } = require('node-fetch');
 const config = require('./config');
 
+let token = null;
+
 module.exports.getBearerToken = async () => {
+    if (token != null) {
+        return token;
+    }
     const vars = [
         'AZURE_CLIENT_ID',
         'AZURE_CLIENT_SECRET',
@@ -10,7 +15,6 @@ module.exports.getBearerToken = async () => {
         'AZURE_SUBSCRIPTION_ID',
     ];
     vars.forEach((item) => {
-        console.log(`${item}: ${config[item]}`);
         if (!config[item]) {
             throw Error('Expected variable not present: ', item);
         }
@@ -35,8 +39,8 @@ module.exports.getBearerToken = async () => {
             }
         );
         const data = await response.json();
-
-        return { access_token: data.access_token, expires_on: data.expires_on };
+        token = { access_token: data.access_token, expires_on: data.expires_on };
+        return token;
     } catch (error) {
         console.error('Error fetching token', error);
         return error;
