@@ -1,5 +1,5 @@
 require('../config/db/database');
-const { sub, add } = require('date-fns');
+const { sub, add, endOfYesterday } = require('date-fns');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const {
     getMetricCost,
@@ -26,7 +26,7 @@ const byteToMiB = (bytes) => Number(bytes / (1024 * 1024)).toFixed(2);
 
 module.exports = async (context, myTimer) => {
     // Prepare start and end dates
-    const endDate = new Date();
+    const endDate = endOfYesterday();
     let startDate = sub(endDate, { days: config.DAYS_BACK });
     startDate = add(startDate, { seconds: 1 });
 
@@ -81,14 +81,17 @@ module.exports = async (context, myTimer) => {
     // CPU Utilization
     const cpuData = getAvgValue(await getCPU(allResources, startDate, endDate));
 
-    context.log(cpuData);
-
     avgCPU.startDate = startDate;
     avgCPU.endDate = endDate;
     avgCPU.value = cpuData / gibIATI;
 
     await avgCPU.save();
 
+    /* Google Analytics and Lighthouse Metrics:
+        - Time To Interative
+        - Avg Server Response Time
+        - Page Weight
+    */
     const GAandLAdata = avgGAandLH(await getGAandLHmetrics(3));
 
     tti.startDate = startDate;
