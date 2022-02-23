@@ -11,11 +11,18 @@ const {
     getAvgValue,
     getCPU,
 } = require('../metrics/azure');
+const { getGAandLHmetrics, avgGAandLH } = require('../metrics/google');
 const config = require('../config/config');
 const cost = require('../config/db/metrics/cost');
 const acu = require('../config/db/metrics/acu');
 const dbCompute = require('../config/db/metrics/dbCompute');
 const avgCPU = require('../config/db/metrics/avgCPU');
+const tti = require('../config/db/metrics/tti');
+const totalByteWeight = require('../config/db/metrics/totalByteWeight');
+const avgServerRes = require('../config/db/metrics/avgServerRes');
+
+const byteToGiB = (bytes) => Number(bytes / (1024 * 1024 * 1024)).toFixed(2);
+const byteToMiB = (bytes) => Number(bytes / (1024 * 1024)).toFixed(2);
 
 module.exports = async (context, myTimer) => {
     // Prepare start and end dates
@@ -39,7 +46,7 @@ module.exports = async (context, myTimer) => {
     for await (const blob of containerClient.listBlobsFlat()) {
         iatiBytes += blob.properties.contentLength;
     }
-    const gibIATI = Number(iatiBytes / (1024 * 1024 * 1024)).toFixed(2);
+    const gibIATI = byteToGiB(iatiBytes);
 
     // Azure Cost
     const costData = getMetricCost(await getRawCost(startDate, endDate));
@@ -81,4 +88,24 @@ module.exports = async (context, myTimer) => {
     avgCPU.value = cpuData / gibIATI;
 
     await avgCPU.save();
+
+    const GAandLAdata = avgGAandLH(await getGAandLHmetrics(3));
+
+    tti.startDate = startDate;
+    tti.endDate = endDate;
+    tti.value = GAandLAdata.TTI / 1000; // ms to seconds
+
+    await tti.save();
+
+    totalByteWeight.startDate = startDate;
+    totalByteWeight.endDate = endDate;
+    totalByteWeight.value = byteToMiB(GAandLAdata.totalByteWeight);
+
+    await totalByteWeight.save();
+
+    avgServerRes.startDate = startDate;
+    avgServerRes.endDate = endDate;
+    avgServerRes.value = GAandLAdata.avgServerResponseTime;
+
+    await avgServerRes.save();
 };
