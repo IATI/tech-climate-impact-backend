@@ -36,79 +36,85 @@ module.exports = async (context, myTimer) => {
     }
     context.log('JavaScript timer trigger function ran!', endDate.toISOString());
 
-    // Get GiB of IATI Data (denominator)
-    const blobServiceClient = BlobServiceClient.fromConnectionString(
-        config.AZURE_BLOB_CONNECTION_STRING
-    );
-    const containerClient = blobServiceClient.getContainerClient(config.AZURE_BLOB_IATI_CONTAINER);
-    let iatiBytes = 0;
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const blob of containerClient.listBlobsFlat()) {
-        iatiBytes += blob.properties.contentLength;
-    }
-    const gibIATI = byteToGiB(iatiBytes);
+    try {
+        // Get GiB of IATI Data (denominator)
+        const blobServiceClient = BlobServiceClient.fromConnectionString(
+            config.AZURE_BLOB_CONNECTION_STRING
+        );
+        const containerClient = blobServiceClient.getContainerClient(
+            config.AZURE_BLOB_IATI_CONTAINER
+        );
+        let iatiBytes = 0;
+        // eslint-disable-next-line no-restricted-syntax
+        for await (const blob of containerClient.listBlobsFlat()) {
+            iatiBytes += blob.properties.contentLength;
+        }
+        const gibIATI = byteToGiB(iatiBytes);
 
-    // Azure Cost
-    const costData = getMetricCost(await getRawCost(startDate, endDate));
+        // Azure Cost
+        const costData = getMetricCost(await getRawCost(startDate, endDate));
 
-    cost.startDate = startDate;
-    cost.endDate = endDate;
-    cost.value = costData.cost / gibIATI;
+        cost.startDate = startDate;
+        cost.endDate = endDate;
+        cost.value = costData.cost / gibIATI;
 
-    await cost.save();
+        await cost.save();
 
-    // Get All Azure Resources for Azure Metrics
-    const allResources = await getAllResources();
+        // Get All Azure Resources for Azure Metrics
+        const allResources = await getAllResources();
 
-    // ACU
-    const acuData = getTotalValue(await getACU(allResources));
+        // ACU
+        const acuData = getTotalValue(await getACU(allResources));
 
-    acu.startDate = startDate;
-    acu.endDate = endDate;
-    acu.value = acuData / gibIATI;
+        acu.startDate = startDate;
+        acu.endDate = endDate;
+        acu.value = acuData / gibIATI;
 
-    await acu.save();
+        await acu.save();
 
-    // Database Compute
-    const dbComputeData = getTotalValue(await getDbCompute(allResources));
+        // Database Compute
+        const dbComputeData = getTotalValue(await getDbCompute(allResources));
 
-    dbCompute.startDate = startDate;
-    dbCompute.endDate = endDate;
-    dbCompute.value = dbComputeData / gibIATI;
+        dbCompute.startDate = startDate;
+        dbCompute.endDate = endDate;
+        dbCompute.value = dbComputeData / gibIATI;
 
-    await dbCompute.save();
+        await dbCompute.save();
 
-    // CPU Utilization
-    const cpuData = getAvgValue(await getCPU(allResources, startDate, endDate));
+        // CPU Utilization
+        const cpuData = getAvgValue(await getCPU(allResources, startDate, endDate));
 
-    avgCPU.startDate = startDate;
-    avgCPU.endDate = endDate;
-    avgCPU.value = cpuData / gibIATI;
+        avgCPU.startDate = startDate;
+        avgCPU.endDate = endDate;
+        avgCPU.value = cpuData / gibIATI;
 
-    await avgCPU.save();
+        await avgCPU.save();
 
-    /* Google Analytics and Lighthouse Metrics:
+        /* Google Analytics and Lighthouse Metrics:
         - Time To Interative
         - Avg Server Response Time
         - Page Weight
     */
-    const GAandLAdata = avgGAandLH(await getGAandLHmetrics(3));
+        const GAandLAdata = avgGAandLH(await getGAandLHmetrics(3));
 
-    tti.startDate = startDate;
-    tti.endDate = endDate;
-    tti.value = GAandLAdata.TTI / 1000; // ms to seconds
+        tti.startDate = startDate;
+        tti.endDate = endDate;
+        tti.value = GAandLAdata.TTI / 1000; // ms to seconds
 
-    await tti.save();
+        await tti.save();
 
-    totalByteWeight.startDate = startDate;
-    totalByteWeight.endDate = endDate;
-    totalByteWeight.value = byteToMiB(GAandLAdata.totalByteWeight);
+        totalByteWeight.startDate = startDate;
+        totalByteWeight.endDate = endDate;
+        totalByteWeight.value = byteToMiB(GAandLAdata.totalByteWeight);
 
-    await totalByteWeight.save();
+        await totalByteWeight.save();
 
-    avgServerRes.startDate = startDate;
-    avgServerRes.endDate = endDate;
-    avgServerRes.value = GAandLAdata.avgServerResponseTime;
+        avgServerRes.startDate = startDate;
+        avgServerRes.endDate = endDate;
+        avgServerRes.value = GAandLAdata.avgServerResponseTime;
 
-    await avgServerRes.save();
+        await avgServerRes.save();
+    } catch (error) {
+        context.log(error);
+    }
 };

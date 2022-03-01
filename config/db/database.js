@@ -14,7 +14,7 @@ class Database {
         mongoose
             .connect(`mongodb://${server}/${database}`)
             .then(() => {
-                console.log('Database connection successful');
+                console.log(`Database connection successful to mongodb://${server}/${database}`);
             })
             .catch((err) => {
                 console.error('Database connection error', err);
