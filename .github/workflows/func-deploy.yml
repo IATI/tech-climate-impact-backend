@@ -46,10 +46,15 @@ jobs:
         run: |
           echo $GOOGLE_APPLICATION_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS_FILENAME
 
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1.4.3
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }} # Service Principal credentials saved in GitHub Secrets
+
       - name: Set Env variables
         uses: Azure/appservice-settings@v1.1.1
         with:
-          app-name: ${{env.NAME}}-${{env.STAGE}}
+          app-name: ${{env.NAME}}
           app-settings-json: |
             [
                 {
@@ -101,13 +106,8 @@ jobs:
                     "name": "GOOGLE_APPLICATION_CREDENTIALS_FILENAME",
                     "value": "${{ env.GOOGLE_APPLICATION_CREDENTIALS_FILENAME }}",
                     "slotSetting": false
-                },
+                }
             ]
-
-      - name: 'Login via Azure CLI'
-        uses: azure/login@v1.4.3
-        with:
-          creds: ${{ env.AZURE_CREDENTIALS }} # Service Principal credentials saved in GitHub Secrets
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1.4.4
