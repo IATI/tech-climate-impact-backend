@@ -19,7 +19,8 @@
         "googleapis": "^95.0.0",
         "lighthouse": "^9.4.0",
         "mongoose": "^6.2.4",
-        "node-fetch": "^2.6.7"
+        "node-fetch": "^2.6.7",
+        "puppeteer": "^13.4.1"
     },
     "devDependencies": {
         "@prettier/plugin-xml": "^1.2.0",
