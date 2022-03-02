@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const config = require('../config');
 
-const server = `${config.DB_HOST}:${config.DB_PORT}`; // REPLACE WITH YOUR DB SERVER
-const database = config.DB_NAME; // REPLACE WITH YOUR DB NAME
-
 class Database {
     constructor() {
         this.connect();
@@ -12,9 +9,13 @@ class Database {
     // eslint-disable-next-line class-methods-use-this
     connect() {
         mongoose
-            .connect(`mongodb://${server}/${database}`)
+            .connect(
+                `mongodb+srv://${config.DB_USER}:${config.DB_PASSWORD}@${config.DB_HOST}/${config.DB_NAME}?retryWrites=true&w=majority`
+            )
             .then(() => {
-                console.log(`Database connection successful to mongodb://${server}/${database}`);
+                console.log(
+                    `Database connection successful to mongodb://${config.DB_HOST}/${config.DB_NAME} as user ${config.DB_USER}`
+                );
             })
             .catch((err) => {
                 console.error('Database connection error', err);
