@@ -1,0 +1,113 @@
+name: Deploy_To_Function_On_Push
+
+on:
+  release:
+
+env:
+  NAME: func-tci-services
+  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  AZURE_BLOB_CONNECTION_STRING: ${{ secrets.AZURE_BLOB_CONNECTION_STRING }}
+  AZURE_BLOB_IATI_CONTAINER: ${{ secrets.AZURE_BLOB_IATI_CONTAINER }}
+  GOOGLE_APPLICATION_CREDENTIALS_FILENAME: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_FILENAME }}
+  GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v2.4.0
+
+      - name: 'Setup Node Environment'
+        uses: actions/setup-node@v2.5.1
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: 'Resolve Project Dependencies Using Npm'
+        shell: bash
+        run: |
+          npm i -g npm
+          npm set-script prepare ""
+          npm install --production
+
+      - name: 'Copy in GA Credentials file'
+        shell: bash
+        run: |
+          echo $GOOGLE_APPLICATION_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS_FILENAME
+
+      - name: Set Env variables
+        uses: Azure/appservice-settings@v1.1.1
+        with:
+          app-name: ${{env.NAME}}-${{env.STAGE}}
+          app-settings-json: |
+            [
+                {
+                    "name": "DB_HOST",
+                    "value": "${{ env.DB_HOST }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "DB_PORT",
+                    "value": "${{ env.DB_PORT }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "DB_NAME",
+                    "value": "${{ env.DB_NAME }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "AZURE_CLIENT_ID",
+                    "value": "${{ env.AZURE_CLIENT_ID }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "AZURE_CLIENT_SECRET",
+                    "value": "${{ env.AZURE_CLIENT_SECRET }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "AZURE_TENANT_ID",
+                    "value": "${{ env.AZURE_TENANT_ID }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "AZURE_SUBSCRIPTION_ID",
+                    "value": "${{ env.AZURE_SUBSCRIPTION_ID }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "AZURE_BLOB_CONNECTION_STRING",
+                    "value": "${{ env.AZURE_BLOB_CONNECTION_STRING }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "AZURE_BLOB_IATI_CONTAINER",
+                    "value": "${{ env.AZURE_BLOB_IATI_CONTAINER }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "GOOGLE_APPLICATION_CREDENTIALS_FILENAME",
+                    "value": "${{ env.GOOGLE_APPLICATION_CREDENTIALS_FILENAME }}",
+                    "slotSetting": false
+                },
+            ]
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1.4.3
+        with:
+          creds: ${{ env.AZURE_CREDENTIALS }} # Service Principal credentials saved in GitHub Secrets
+
+      - name: 'Run Azure Functions Action'
+        uses: Azure/functions-action@v1.4.4
+        with:
+          app-name: ${{ env.NAME }}
+          package: '.'
