@@ -68,6 +68,16 @@ jobs:
                     "slotSetting": false
                 },
                 {
+                    "name": "DB_USER",
+                    "value": "${{ env.DB_USER }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "DB_PASSWORD",
+                    "value": "${{ env.DB_PASSWORD }}",
+                    "slotSetting": false
+                },
+                {
                     "name": "DB_NAME",
                     "value": "${{ env.DB_NAME }}",
                     "slotSetting": false
