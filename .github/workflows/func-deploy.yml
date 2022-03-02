@@ -2,6 +2,7 @@ name: Deploy_To_Function_On_Push
 
 on:
   release:
+    types: [published]
 
 env:
   NAME: func-tci-services
