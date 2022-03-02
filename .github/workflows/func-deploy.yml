@@ -10,7 +10,6 @@ env:
   DB_HOST: ${{ secrets.DB_HOST }}
   DB_USER: ${{ secrets.DB_USER }}
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_PORT: ${{ secrets.DB_PORT }}
   DB_NAME: ${{ secrets.DB_NAME }}
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
@@ -60,11 +59,6 @@ jobs:
                 {
                     "name": "DB_HOST",
                     "value": "${{ env.DB_HOST }}",
-                    "slotSetting": false
-                },
-                {
-                    "name": "DB_PORT",
-                    "value": "${{ env.DB_PORT }}",
                     "slotSetting": false
                 },
                 {
