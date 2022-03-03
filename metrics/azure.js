@@ -16,8 +16,6 @@ module.exports.getRawCost = async (startDate, endDate) => {
         const token = await getBearerToken();
 
         const myHeaders = new Headers();
-        // auth
-        // const token = await getBearerToken();
         myHeaders.append('Authorization', `Bearer ${token.access_token}`);
         myHeaders.append('Content-Type', 'application/json');
 

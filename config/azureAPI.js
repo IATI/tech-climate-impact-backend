@@ -2,11 +2,15 @@ const fetch = require('node-fetch');
 const { Headers } = require('node-fetch');
 const config = require('./config');
 
-let token = null;
+let token = {};
 
 module.exports.getBearerToken = async () => {
-    if (token != null) {
+    if (Object.keys(token).length !== 0 && Date.now() < new Date(token.expires_on * 1000)) {
+        console.log(`Using cached token, expires: ${new Date(token.expires_on * 1000)}`);
         return token;
+    }
+    if (Object.keys(token).length !== 0 && 'expires_on' in token) {
+        console.log(`Getting new token after exipry: ${new Date(token.expires_on * 1000)}`);
     }
     const vars = [
         'AZURE_CLIENT_ID',
