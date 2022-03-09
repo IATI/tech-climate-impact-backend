@@ -33,12 +33,10 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
-      - name: 'Resolve Project Dependencies Using Npm'
+      - name: 'Prep Npm script for install'
         shell: bash
         run: |
-          npm i -g npm
           npm set-script prepare ""
-          npm install --production
 
       - name: 'Copy in GA Credentials file'
         shell: bash
@@ -118,3 +116,4 @@ jobs:
         with:
           app-name: ${{ env.NAME }}
           package: '.'
+          scm-do-build-during-deployment: true
