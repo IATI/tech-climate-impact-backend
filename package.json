@@ -20,7 +20,7 @@
         "lighthouse": "^9.4.0",
         "mongoose": "^6.2.4",
         "node-fetch": "^2.6.7",
-        "puppeteer": "^13.4.1"
+        "puppeteer": "^13.5.0"
     },
     "devDependencies": {
         "@prettier/plugin-xml": "^1.2.0",
@@ -29,7 +29,7 @@
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-import": "^2.25.4",
         "husky": "^7.0.4",
-        "lint-staged": "^12.3.4",
+        "lint-staged": "^12.3.5",
         "prettier": "^2.5.1"
     },
     "lint-staged": {
