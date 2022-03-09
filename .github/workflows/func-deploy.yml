@@ -36,6 +36,7 @@ jobs:
       - name: 'Prep Npm script for install'
         shell: bash
         run: |
+          npm i -g npm
           npm set-script prepare ""
 
       - name: 'Copy in GA Credentials file'
