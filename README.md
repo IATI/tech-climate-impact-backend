@@ -32,21 +32,6 @@
 
 -   Needs to be set for running locally, but will not actually report telemetry to the AppInsights instance in my experience
 
-`REDIS_PORT`
-
--   local - `6379`
--   Azure - `6380` (tls)
-
-`REDIS_KEY`
-
--   Access key from the Redis instance
-
-`REDIS_HOSTNAME`
-
--   Hostname of redis instance
-
--   If you set no environment variables the application will attempt to connect to the default host:port for a local redis instance `127.0.0.1:6379`
-
 ### Adding New
 
 Add in:
@@ -92,25 +77,9 @@ let myEnvVariable = config.ENV_VAR
 <0.0.0>
 ```
 
-### `GET /pvt?name=Name`
+### `GET /metrics?startdate=<date>&enddate=<date>`
 
--   Returns
-
-```
-Private API.
-Version <0.0.0>
-Hello, <Name>. This HTTP triggered function executed successfully.
-```
-
-### `GET /pub?name=Name`
-
--   Returns
-
-```
-Public API.
-Version <0.0.0>
-Hello, <Name>. This HTTP triggered function executed successfully.
-```
+Returns Metrics for that time period
 
 ## Creating a new route
 
@@ -119,10 +88,6 @@ Hello, <Name>. This HTTP triggered function executed successfully.
 ## AppInsights SDK
 
 -   An example of using the `config/appInsights.js` utility is available in the `pvt-get/index.js` where execution time of the function is measured and then logged in 2 ways to the AppInsights Telemetry.
-
-## Filesystem
-
--   Provided in `config/fileSystem.js` which can be imported to get the promisified versions of common `fs` functions since we're stuck with Node v12 for now (these are standard in Node v14)
 
 ## Integration Tests
 
@@ -135,33 +100,9 @@ Hello, <Name>. This HTTP triggered function executed successfully.
 ### Modifying/Adding
 
 Integration tests are written in Postman v2.1 format and run with newman
-Import the `integrations-tests/azure-function-node-microservice-template.postman_collection.json` into Postman and write additional tests there
+Import the `integration-tests/tech-climate-impact-integration-tests.postman_collection.json` into Postman and write additional tests there
 
 ## Deployment
 
--   Update relevant items in `.github/workflows/develop-func-deploy.yml` (see comments inline)
+-   Update relevant items in `.github/workflows/func-deploy.yml`
 -   Create a [Service Principal](https://github.com/IATI/IATI-Internal-Wiki/blob/main/IATI-Unified-Infra/ServicePrincipals.md) and set the DEV_AZURE_CREDENTIALS GitHub Secret
-
-## Redis-cli
-
-Connect to local Redis instance cli
-`redis-cli`
-
-Connect CLI to Azure
-`redis-cli -h $REDIS_HOSTNAME -p $REDIS_PORT -a $REDIS_KEY --tls`
-
-Check value for a key
-`get <key>`
-
-## API Keys in Key Vault
-
-Setting the following Environment variables on the App Service instance enables the API keys to be stored in Key Vault instead of the file storage account associated with the Function.
-`AzureWebJobsSecretStorageType`=keyvault
-`AzureWebJobsSecretStorageKeyVaultName`= ${{ secrets.`ENV`_KEY_VAULT_NAME }}
-
-You will need to turn on the System Assigned Managed Identity for the Function App:
-Function App > Settings > Identity
-
-Then you will also need to allow the Function to access the Key Vault by adding an [Access Policy](https://portal.azure.com/#@iatitech.onmicrosoft.com/resource/subscriptions/bcaf7a00-7a14-4932-ac41-7bb0dee0d2a9/resourceGroups/rg-sharedresources-dev/providers/Microsoft.KeyVault/vaults/kv-iati-dev/access_policies)
-
--   Secret - Get, List, Set, Delete
