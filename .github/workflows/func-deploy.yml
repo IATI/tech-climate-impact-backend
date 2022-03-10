@@ -32,11 +32,6 @@ jobs:
           npm set-script prepare ""
           npm i --production
 
-      - name: 'Copy in GA Credentials file'
-        shell: bash
-        run: |
-          echo $GOOGLE_APPLICATION_CREDENTIALS > $GOOGLE_APPLICATION_CREDENTIALS_FILENAME
-
       - name: 'Login via Azure CLI'
         uses: azure/login@v1.4.3
         with:
