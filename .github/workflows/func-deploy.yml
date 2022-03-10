@@ -1,4 +1,4 @@
-name: Deploy_To_Function_On_Push
+name: Deploy to Function on Release
 
 on:
   release:
@@ -7,18 +7,10 @@ on:
 env:
   NAME: func-tci-services
   AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-  DB_HOST: ${{ secrets.DB_HOST }}
-  DB_USER: ${{ secrets.DB_USER }}
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_NAME: ${{ secrets.DB_NAME }}
-  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-  AZURE_BLOB_CONNECTION_STRING: ${{ secrets.AZURE_BLOB_CONNECTION_STRING }}
-  AZURE_BLOB_IATI_CONTAINER: ${{ secrets.AZURE_BLOB_IATI_CONTAINER }}
-  GOOGLE_APPLICATION_CREDENTIALS_FILENAME: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_FILENAME }}
-  GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+  DB_HOST: ${{ secrets.TCI_MDB_HOST }}
+  DB_USER: ${{ secrets.TCI_MDB_USER }}
+  DB_PASSWORD: ${{ secrets.TCI_MDB_PASSWORD }}
+  DB_NAME: ${{ secrets.TCI_MDB_NAME }}
 
 jobs:
   build-deploy:
@@ -74,41 +66,6 @@ jobs:
                     "name": "DB_NAME",
                     "value": "${{ env.DB_NAME }}",
                     "slotSetting": false
-                },
-                {
-                    "name": "AZURE_CLIENT_ID",
-                    "value": "${{ env.AZURE_CLIENT_ID }}",
-                    "slotSetting": false
-                },
-                {
-                    "name": "AZURE_CLIENT_SECRET",
-                    "value": "${{ env.AZURE_CLIENT_SECRET }}",
-                    "slotSetting": false
-                },
-                {
-                    "name": "AZURE_TENANT_ID",
-                    "value": "${{ env.AZURE_TENANT_ID }}",
-                    "slotSetting": false
-                },
-                {
-                    "name": "AZURE_SUBSCRIPTION_ID",
-                    "value": "${{ env.AZURE_SUBSCRIPTION_ID }}",
-                    "slotSetting": false
-                },
-                {
-                    "name": "AZURE_BLOB_CONNECTION_STRING",
-                    "value": "${{ env.AZURE_BLOB_CONNECTION_STRING }}",
-                    "slotSetting": false
-                },
-                {
-                    "name": "AZURE_BLOB_IATI_CONTAINER",
-                    "value": "${{ env.AZURE_BLOB_IATI_CONTAINER }}",
-                    "slotSetting": false
-                },
-                {
-                    "name": "GOOGLE_APPLICATION_CREDENTIALS_FILENAME",
-                    "value": "${{ env.GOOGLE_APPLICATION_CREDENTIALS_FILENAME }}",
-                    "slotSetting": false
                 }
             ]
 
@@ -117,5 +74,4 @@ jobs:
         with:
           app-name: ${{ env.NAME }}
           package: '.'
-          scm-do-build-during-deployment: true
-          enable-oryx-build: true
+          respect-funcignore: true
