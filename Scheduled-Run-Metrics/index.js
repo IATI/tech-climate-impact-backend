@@ -24,17 +24,17 @@ const avgServerRes = require('../config/db/metrics/avgServerRes');
 const byteToGiB = (bytes) => Number(bytes / (1024 * 1024 * 1024)).toFixed(2);
 const byteToMiB = (bytes) => Number(bytes / (1024 * 1024)).toFixed(2);
 
-module.exports = async (context, myTimer) => {
+const logSave = (object) => {
+    console.log(`Saving to DB - ${object.type} `);
+};
+
+const runMetrics = async () => {
     // Prepare start and end dates
     const endDate = endOfYesterday();
     let startDate = sub(endDate, { days: config.DAYS_BACK });
     startDate = add(startDate, { seconds: 1 });
 
-    // log timer info
-    if (myTimer.isPastDue) {
-        context.log('JavaScript is running late!');
-    }
-    context.log('JavaScript timer trigger function ran!', endDate.toISOString());
+    console.log('JavaScript timer trigger function ran!', endDate.toISOString());
 
     try {
         // Get GiB of IATI Data (denominator)
@@ -58,6 +58,7 @@ module.exports = async (context, myTimer) => {
         cost.endDate = endDate;
         cost.value = costData.cost / gibIATI;
 
+        logSave(cost);
         await cost.save();
 
         // Get All Azure Resources for Azure Metrics
@@ -70,6 +71,7 @@ module.exports = async (context, myTimer) => {
         acu.endDate = endDate;
         acu.value = acuData / gibIATI;
 
+        logSave(acu);
         await acu.save();
 
         // Database Compute
@@ -79,6 +81,7 @@ module.exports = async (context, myTimer) => {
         dbCompute.endDate = endDate;
         dbCompute.value = dbComputeData / gibIATI;
 
+        logSave(dbCompute);
         await dbCompute.save();
 
         // CPU Utilization
@@ -88,6 +91,7 @@ module.exports = async (context, myTimer) => {
         avgCPU.endDate = endDate;
         avgCPU.value = cpuData / gibIATI;
 
+        logSave(avgCPU);
         await avgCPU.save();
 
         /* Google Analytics and Lighthouse Metrics:
@@ -101,20 +105,31 @@ module.exports = async (context, myTimer) => {
         tti.endDate = endDate;
         tti.value = GAandLAdata.TTI / 1000; // ms to seconds
 
+        logSave(tti);
         await tti.save();
 
         totalByteWeight.startDate = startDate;
         totalByteWeight.endDate = endDate;
         totalByteWeight.value = byteToMiB(GAandLAdata.totalByteWeight);
 
+        logSave(totalByteWeight);
         await totalByteWeight.save();
 
         avgServerRes.startDate = startDate;
         avgServerRes.endDate = endDate;
         avgServerRes.value = GAandLAdata.avgServerResponseTime;
 
+        logSave(avgServerRes);
         await avgServerRes.save();
+
+        console.log(`All metrics saved`);
+        return;
     } catch (error) {
-        context.log(error);
+        console.log(error);
     }
 };
+
+(async () => {
+    await runMetrics();
+    process.exit();
+})();

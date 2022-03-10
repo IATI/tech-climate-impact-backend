@@ -5,7 +5,8 @@
     "scripts": {
         "start": "func start --javascript",
         "start:verbose": "func start --javascript --verbose",
-        "trigger:metrics": "curl --location --request POST 'http://localhost:7071/admin/functions/Scheduled-Run-Metrics' --header 'Content-Type: application/json' --data-raw '{ \"input\": \"test\" }'",
+        "metrics": "node Scheduled-Run-Metrics/index.js",
+        "metrics:test": "node Scheduled-Run-Metrics/test.js",
         "test": "newman run integration-tests/azure-function-node-microservice-template.postman_collection.json -e integration-tests/envs/local-function-7071.postman_environment.json",
         "prepare": "husky install"
     },
@@ -19,8 +20,7 @@
         "googleapis": "^95.0.0",
         "lighthouse": "^9.4.0",
         "mongoose": "^6.2.4",
-        "node-fetch": "^2.6.7",
-        "puppeteer": "^13.5.0"
+        "node-fetch": "^2.6.7"
     },
     "devDependencies": {
         "@prettier/plugin-xml": "^1.2.0",
