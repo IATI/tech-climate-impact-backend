@@ -44,4 +44,4 @@ jobs:
       - name: 'Run Metrics function'
         shell: bash
         run: |
-          npm run metrics:test
+          npm run metrics
