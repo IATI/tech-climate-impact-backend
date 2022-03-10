@@ -30,6 +30,7 @@ jobs:
         run: |
           npm i -g npm
           npm set-script prepare ""
+          npm i --production
 
       - name: 'Copy in GA Credentials file'
         shell: bash
