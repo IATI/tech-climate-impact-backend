@@ -14,7 +14,7 @@
     "dependencies": {
         "applicationinsights": "^2.2.2",
         "dotenv": "^16.0.0",
-        "mongoose": "^6.2.8"
+        "mongoose": "^6.2.9"
     },
     "devDependencies": {
         "@prettier/plugin-xml": "^2.0.1",
