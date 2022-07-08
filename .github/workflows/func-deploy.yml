@@ -67,7 +67,7 @@ jobs:
                     "name": "DB_NAME",
                     "value": "${{ env.DB_NAME }}",
                     "slotSetting": false
-                }                
+                }
             ]
 
       - name: 'Run Azure Functions Action'
