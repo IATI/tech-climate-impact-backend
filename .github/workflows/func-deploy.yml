@@ -30,7 +30,7 @@ jobs:
         run: |
           npm i -g npm
           npm set-script prepare ""
-          npm i --production
+          npm ci --production
 
       - name: 'Login via Azure CLI'
         uses: azure/login@v1.4.5
@@ -43,6 +43,11 @@ jobs:
           app-name: ${{env.NAME}}
           app-settings-json: |
             [
+                {
+                    "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                    "value": "~16",
+                    "slotSetting": false
+                },
                 {
                     "name": "DB_HOST",
                     "value": "${{ env.DB_HOST }}",
@@ -62,7 +67,7 @@ jobs:
                     "name": "DB_NAME",
                     "value": "${{ env.DB_NAME }}",
                     "slotSetting": false
-                }
+                }                
             ]
 
       - name: 'Run Azure Functions Action'
