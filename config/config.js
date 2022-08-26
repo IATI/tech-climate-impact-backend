@@ -1,7 +1,9 @@
-require('dotenv').config();
-const { version } = require('../package.json');
+import 'dotenv/config';
+import { readFile } from 'fs/promises';
 
-module.exports = {
+const { version } = JSON.parse(await readFile(new URL('../package.json', import.meta.url)));
+
+const config = {
     APP_NAME: 'IATI TCI Backend',
     VERSION: version,
     NODE_ENV: process.env.NODE_ENV,
@@ -12,3 +14,5 @@ module.exports = {
     DB_PORT: process.env.DB_PORT,
     DB_NAME: process.env.DB_NAME,
 };
+
+export default config;
