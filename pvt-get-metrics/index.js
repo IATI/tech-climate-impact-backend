@@ -1,7 +1,7 @@
-require('../config/db/database');
-const Metric = require('../config/db/models/metric');
+import '../config/db/database.js';
+import Metric from '../config/db/models/metric.js';
 
-module.exports = async (context, req) => {
+export default async function pvtGetMetrics(context, req) {
     const { enddate: endDate, startdate: startDate } = req.query;
 
     if (!endDate || !startDate) {
@@ -18,4 +18,4 @@ module.exports = async (context, req) => {
         // status: 200, /* Defaults to 200 */
         body: res,
     };
-};
+}
