@@ -14,7 +14,7 @@
     "author": "IATI",
     "dependencies": {
         "dotenv": "^16.0.2",
-        "mongoose": "^6.5.4"
+        "mongoose": "^6.5.5"
     },
     "devDependencies": {
         "@prettier/plugin-xml": "^2.2.0",
