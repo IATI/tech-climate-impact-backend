@@ -13,7 +13,8 @@ servers:
 paths:
     /api/metrics:
         get:
-            summary: GET metrics
+            summary: Returns metrics.
+            description: Returns TCI metrics for the given date range.
             parameters:
                  - name: startdate
                    description: Start date for metrics
@@ -88,7 +89,7 @@ paths:
 
     /api/pub/version:
         get:
-            summary: GET application version
+            summary: Returns application version.
             responses:
                 200:
                     description: Version of the application in semver format
