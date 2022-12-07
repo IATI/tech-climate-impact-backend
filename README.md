@@ -1,4 +1,14 @@
-# azure-function-node-microservice-template
+# tech-climate-impact-backend
+
+Backend for the Technical Climate Impact dashboard frontend.
+
+-   Metrics are collected with: https://github.com/IATI/tech-climate-impact-metrics
+
+-   Frontend: https://github.com/IATI/tech-climate-impact-frontend
+
+## Endpoints
+
+See OpenAPI specification `postman/schemas/index.yaml`. To view locally in Swagger UI, you can use the `42crunch.vscode-openapi` VSCode extension.
 
 ## Prerequisities
 
@@ -68,20 +78,6 @@ let myEnvVariable = config.ENV_VAR
 
 -   This is done with eslint following the airbnb-base style and using [Prettier](https://prettier.io). Implemented with [this](https://sourcelevel.io/blog/how-to-setup-eslint-and-prettier-on-node) guide.
 -   If you use VSCode the formatting will happen automagically on save due to the `.vscode/settings.json` > `"editor.formatOnSave": true` setting
-
-## Endpoints /api
-
-### `GET /pub/version`
-
--   Returns application version from `package.json`
-
-```
-<0.0.0>
-```
-
-### `GET /metrics?startdate=<date>&enddate=<date>`
-
-Returns Metrics for that time period
 
 ## Creating a new route
 
