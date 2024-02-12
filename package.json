@@ -13,7 +13,7 @@
     },
     "author": "IATI",
     "dependencies": {
-        "dotenv": "^16.4.1",
+        "dotenv": "^16.4.2",
         "mongoose": "^8.1.1"
     },
     "devDependencies": {
